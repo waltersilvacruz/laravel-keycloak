@@ -1,0 +1,24 @@
+{
+    "name": "equipe-web/laravel-keycloak",
+    "version": "1.0.0",
+    "description": "Pacote de integração de projetos Laravel com o sistema KeyCloak de autenticação e autorização",
+    "keywords": ["tcemt", "seguranca", "keycloak", "autenticacao", "autorizacao"],
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "EquipeWeb\\LaravelKeycloak\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Equipe Web",
+            "email": "equipe-web@tce.mt.gov.br",
+            "homepage": "https://gitlab.tce.mt.gov.br/equipe-web"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "laravel/framework": "^9.0"
+    }
+}
