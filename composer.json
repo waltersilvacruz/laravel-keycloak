@@ -1,6 +1,6 @@
 {
     "name": "equipe-web/laravel-keycloak",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Pacote de integração de projetos Laravel com o sistema KeyCloak de autenticação e autorização",
     "keywords": ["tcemt", "seguranca", "keycloak", "autenticacao", "autorizacao"],
     "type": "library",
