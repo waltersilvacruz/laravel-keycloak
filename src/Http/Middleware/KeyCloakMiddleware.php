@@ -1,6 +1,7 @@
 <?php
 
 namespace TCEMT\KeyCloak\Http\Middleware;
+use Closure;
 
 class KeyCloakMiddleware {
 
