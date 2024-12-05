@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
-class KeycloakController extends Controller
+class KeyCloakController extends Controller
 {
     /**
      * Handle an authentication attempt.
