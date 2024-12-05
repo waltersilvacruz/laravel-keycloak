@@ -7,7 +7,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "TCEMT\\LaravelKeycloak\\": "src/"
+            "TCEMT\\KeyCloak\\": "src/"
         }
     },
     "authors": [
