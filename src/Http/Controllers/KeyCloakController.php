@@ -53,7 +53,7 @@ class KeyCloakController extends Controller
                 throw new Exception('Arquivo JWT Token não encontrado!');
             }
 
-            $publicKey = readfile(storage_path($jwtTokenFile));
+            $publicKey = file_get_contents(storage_path($jwtTokenFile));
 
             if ($response->successful()) {
                 $tokenData = $response->json();
@@ -62,11 +62,7 @@ class KeyCloakController extends Controller
 
                 $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
                 $permissoes = $decoded->resource_access->webadmin_client;
-
-                Gate::define('has-permission', function ($user, $permissoes) {
-                    $permissions = session('user_permissions', []);
-                    return in_array($permissoes, $permissions);
-                });
+                session()->put('permissoes', $permissoes->roles);
 
                 $model = config('keycloak.auth_model');
                 $loginField = config('keycloak.auth_login_field');

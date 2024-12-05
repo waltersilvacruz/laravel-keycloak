@@ -2,6 +2,7 @@
 
 namespace TCEMT\KeyCloak\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class KeyCloakServiceProvider extends ServiceProvider {

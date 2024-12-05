@@ -2,6 +2,7 @@
 
 namespace TCEMT\KeyCloak\Http\Middleware;
 use Closure;
+use Illuminate\Support\Facades\Gate;
 
 class KeyCloakMiddleware {
 
@@ -13,6 +14,20 @@ class KeyCloakMiddleware {
      * @return mixed
      */
     public function handle($request, Closure $next) {
+        $permissoes = $request->session()->get('permissoes');
+        if(!config('keycloak.enabled')) {
+            Gate::before(function () {
+                return true;
+            });
+        } else {
+            if($permissoes) {
+                foreach ($permissoes as $permissao) {
+                    Gate::define($permissao, function ($user) {
+                        return true;
+                    });
+                }
+            }
+        }
         return $next($request);
     }
 }

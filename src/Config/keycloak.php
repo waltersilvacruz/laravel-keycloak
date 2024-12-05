@@ -78,7 +78,7 @@ return [
     |--------------------------------------------------------------------------
     | Habilita/desabilita o middleware de verificação de credenciais
     */
-    'keycloak_enabled' => env('KEYCLOAK_ENABLED', true),
+    'enabled' => env('KEYCLOAK_ENABLED', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -87,7 +87,7 @@ return [
     | Informe aqui o nome do sistema cadastrado no campo SIS_IDENTIFICACAO do
     | sistema de segurança do TCE
     */
-    'keycloak_app' => env('KEYCLOAK_APP', null),
+    'app' => env('KEYCLOAK_APP', null),
 
 
     /*
@@ -96,7 +96,7 @@ return [
     |--------------------------------------------------------------------------
     | Determina se deve fazer o cache das permissões do Secorp
     */
-    'keycloak_cache_enabled' => env('KEYCLOAK_CACHE_ENABLED', true),
+    'cache_enabled' => env('KEYCLOAK_CACHE_ENABLED', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -106,33 +106,5 @@ return [
     | recuperadas do banco. Esta ação visa reduzir o acesso ao banco de dados
     | de credenciais. Valores em MINUTOS.
     */
-    'keycloak_cache_timeout' => env('KEYCLOAK_CACHE_TIMEOUT', 30),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mapeamento das rotas e processos
-    |--------------------------------------------------------------------------
-    | A chave do cabeçalho é o nome da rota e o valor é o nome do processo
-    | (campo TABELA_PROCESSO do sistema de segurança). É possível utilizar "*"
-    | para que o sistema mapeie várias rotas para o mesmo processo
-    */
-    'keycloak_rules' => [
-        'home' => ['recurso' => 'HOME'],
-        'dashboard.*' => ['recurso' => 'DASHBOARD'],
-        'usuario.index' => ['recurso' => 'USUARIO', 'acao' => 'ACESSAR'],
-        'usuario.incluir' => ['recurso' => 'USUARIO', 'acao' => 'INCLUIR'],
-        'usuario.editar' => ['recurso' => 'USUARIO', 'acao' => 'ALTERAR'],
-        'usuario.excluir' => ['recurso' => 'USUARIO', 'acao' => 'EXCLUIR']
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Rotas ignoradas
-    |--------------------------------------------------------------------------
-    | Informe aqui as rotas que deseja ignorar (bypass). Não é possível colocar
-    | "*" no nome das rotas.
-    */
-    'keycloak_ignore_routes' => [
-        'logout',
-    ],
+    'cache_timeout' => env('KEYCLOAK_CACHE_TIMEOUT', 30),
 ];
