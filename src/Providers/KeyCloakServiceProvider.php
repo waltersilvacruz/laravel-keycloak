@@ -44,7 +44,7 @@ class KeyCloakServiceProvider extends ServiceProvider {
      */
     public function register() {
         $this->app->singleton('keycloak', function ($app) {
-            
+            return new \TCEMT\KeyCloak\Helpers\KeyCloak();
         });
     }
 
