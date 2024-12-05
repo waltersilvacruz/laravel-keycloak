@@ -31,7 +31,7 @@ class KeyCloakController extends Controller
         );
 
         if ($validator->fails()) {
-            return redirect(route(config('keycloak_auth_login_route')))
+            return redirect(route(config('keycloak.auth_login_route')))
                 ->withErrors($validator)
                 ->withInput();
         }
@@ -39,9 +39,9 @@ class KeyCloakController extends Controller
         try {
 
             // Fazer a requisição ao Keycloak
-            $response = Http::asForm()->post(config('keycloak_api_base_url'), [
-                'client_id' => config('keycloak_client_id'),
-                'client_secret' => config('keycloak_client_secret'),
+            $response = Http::asForm()->post(config('keycloak.api_base_url'), [
+                'client_id' => config('keycloak.client_id'),
+                'client_secret' => config('keycloak.client_secret'),
                 'grant_type' => 'password',
                 'username' => $username,
                 'password' => $password,
@@ -68,28 +68,28 @@ class KeyCloakController extends Controller
                     return in_array($permissoes, $permissions);
                 });
 
-                $model = config('keycloak_auth_model');
-                $loginField = config('keycloak_auth_login_field');
+                $model = config('keycloak.auth_model');
+                $loginField = config('keycloak.auth_login_field');
                 $usuario = $model::where($loginField, strtoupper($username))->first();
 
                 if (!$usuario) {
                     $validator->errors()->add('senha', 'Usuário não localizado na base de dados local.');
-                    return redirect(route(config('keycloak_auth_login_route')))->withErrors($validator)->withInput();
+                    return redirect(route(config('keycloak.auth_login_route')))->withErrors($validator)->withInput();
                 }
 
                 // Login do usuário no Laravel
                 Auth::login($usuario);
 
                 // Redireciona para o local definido
-                return redirect(route(config('keycloak_auth_login_success_route')));
+                return redirect(route(config('keycloak.auth_login_success_route')));
             } else {
                 $errorMessage = $response->json('error_description', 'Login ou senha inválidos');
                 $validator->errors()->add('senha', $errorMessage);
-                return redirect(route(config('keycloak_auth_login_route')))->withErrors($validator)->withInput();
+                return redirect(route(config('keycloak.auth_login_route')))->withErrors($validator)->withInput();
             }
         } catch (\Exception $e) {
             $validator->errors()->add('senha', 'Erro durante a autenticação: ' . $e->getMessage());
-            return redirect(route(config('keycloak_auth_login_route')))->withErrors($validator)->withInput();
+            return redirect(route(config('keycloak.auth_login_route')))->withErrors($validator)->withInput();
         }
     }
 
@@ -102,7 +102,7 @@ class KeyCloakController extends Controller
     {
         Auth::logout();
         session()->flush();
-        return redirect(route(config('keycloak_auth_login_route')));
+        return redirect(route(config('keycloak.auth_login_route')));
     }
 }
 
