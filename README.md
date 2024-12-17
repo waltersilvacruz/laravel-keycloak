@@ -56,19 +56,42 @@ limpe o cache de configurações novamente
 php artisan config:cache
 ```
 
-Edite seu arquivo routes/web.php e utilize o novo controller para lidar com o precesso de autenticação. Exemplo:
-```
-Route::get('/auth/redirect', [\TCEMT\KeyCloak\Http\Controllers\KeyCloakController::class, 'redirect'])->name('auth.redirect');
-Route::get('/auth/callback', [\TCEMT\KeyCloak\Http\Controllers\KeyCloakController::class, 'callback'])->name('auth.callback');
-Route::get('/auth/logout', [\TCEMT\KeyCloak\Http\Controllers\KeyCloakController::class, 'logout'])->name('auth.logout');
-```
-
 Execute os comandos abaixo:
 ```
 php artisan clear-compiled && composer dumpautoload && php artisan optimize
 ```
 
 # Utilização
+
+## Links para login e logout via Oauth2
+
+O ServiceProvider desta biblioteca automaticamente irá registrar as seguintes rotas
+para o processo de autenticação:
+- `GET /auth/redirect`: esta rota irá redirecionar a aplicação para a autenticação Oauth2 no servidor KeyCloak. 
+- `GET /auth/callback`: após validar o login e senha, o usuário será redirecionado para esta rota que finalizará o processo de autenticação e autorização.
+- `GET /auth/logout`: efetua o logout do usuário
+
+#### Diretivas Blade para gerar os links de login/logout
+
+Dentro do template blade você pode utilizar a diretiva `@keycloak_login_url($label, $css)` e `@keycloak_logout_url($label, $css)` para gerar os links de login e logout respectivamente.
+
+Exemplo:
+```HTML
+<!-- gera o link de login -->
+<div class="d-grid">
+    @keycloak_login_url("Login", "btn btn-primary")
+</div>
+
+<!-- para logout -->
+<div class="d-grid">
+    @keycloak_logout_url("Logout", "btn btn-primary")
+</div>
+
+```
+Se você utilizar a diretiva de logout, o usuário será redirecionado para a tela de logout do KeyCloak e depois será redirecionado para a URL de logout da sua aplicação. Dessa forma, ao efetuar o logout a sessão do usuário será encerrada nas duas aplicações. Caso você queira que o usuário seja desconectado apenas da sua aplicação e mantenha a sessão autenticada no KeyClock (para logar novamente sem precisar redigitar o login/senha) você deve utilizar a rota `auth.logout` ao invés da diretiva:
+```
+<a href="{{route('auth.logout')}}">Desconectar</a>
+```
 
 ## Dentro de um Controller
 

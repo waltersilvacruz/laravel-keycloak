@@ -19,7 +19,7 @@ class KeyCloakController extends Controller {
     /**
      * @return RedirectResponse
      */
-    public function redirect(): RedirectResponse
+    public function redirect(Request $request): RedirectResponse
     {
         return Socialite::driver('keycloak')->redirect();
     }

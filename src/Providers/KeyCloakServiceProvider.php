@@ -2,7 +2,8 @@
 
 namespace TCEMT\KeyCloak\Providers;
 
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class KeyCloakServiceProvider extends ServiceProvider {
@@ -21,6 +22,10 @@ class KeyCloakServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('keycloak', \SocialiteProviders\Keycloak\Provider::class);
+        });
+
         // Register Middleware
         $this->app['router']->middlewareGroup('web', [
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
@@ -30,7 +35,41 @@ class KeyCloakServiceProvider extends ServiceProvider {
             \TCEMT\KeyCloak\Http\Middleware\KeyCloakMiddleware::class,
         ]);
 
+        // Register routes
         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
+
+        // Register blade directives
+        Blade::directive('keycloak_login_url', function ($expression) {
+            list($label, $cssClasses) = explode(',',$expression);
+            if($label) {
+                $label = substr(trim($label), 1, -1);
+                $label = str_replace('"', "'", $label);
+            }
+            if($cssClasses) {
+                $cssClasses = substr(trim($cssClasses), 1, -1);
+                $cssClasses = str_replace('"', "'", $cssClasses);
+            }
+
+            $link = route('auth.redirect');
+            return "<a href=\"{$link}\" class=\"{$cssClasses}\">{$label}</a>";
+        });
+
+        // Register blade directives
+        Blade::directive('keycloak_logout_url', function ($expression) {
+            list($label, $cssClasses) = explode(',',$expression);
+            if($label) {
+                $label = substr(trim($label), 1, -1);
+                $label = str_replace('"', "'", $label);
+            }
+            if($cssClasses) {
+                $cssClasses = substr(trim($cssClasses), 1, -1);
+                $cssClasses = str_replace('"', "'", $cssClasses);
+            }
+
+            $appUrl = route('auth.logout');
+            $link = \Laravel\Socialite\Facades\Socialite::driver('keycloak')->getLogoutUrl($appUrl, env('KEYCLOAK_CLIENT_ID'));
+            return "<a href=\"{$link}\" class=\"{$cssClasses}\">{$label}</a>";
+        });
     }
 
     /**
