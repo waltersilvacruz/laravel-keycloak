@@ -15,7 +15,7 @@ class KeyCloakMiddleware {
      */
     public function handle($request, Closure $next) {
         $permissoes = $request->session()->get('permissoes');
-        if(!config('keycloak.enabled')) {
+        if(!config('services.keycloak.enabled')) {
             Gate::before(function () {
                 return true;
             });

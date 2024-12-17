@@ -21,13 +21,6 @@ class KeyCloakServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
-        $keycloak = __DIR__ . '/../Config/keycloak.php';
-
-        // Add publishable configuration.
-        $this->publishes([
-            $keycloak => config_path('keycloak.php'),
-        ], 'keycloak');
-
         // Register Middleware
         $this->app['router']->middlewareGroup('web', [
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
@@ -36,6 +29,8 @@ class KeyCloakServiceProvider extends ServiceProvider {
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \TCEMT\KeyCloak\Http\Middleware\KeyCloakMiddleware::class,
         ]);
+
+        $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
     }
 
     /**

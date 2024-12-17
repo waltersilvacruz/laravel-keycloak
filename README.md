@@ -25,27 +25,30 @@ limpe o cache de configurações
 php artisan config:cache
 ```
 
-Execute o comando abaixo para criar o arquivo de configuração:
-```
-php artisan vendor:publish --tag="keycloak"
-```
 
 Edite o arquivo .env e adicione a configuração básicas para o componente de segurança:
 ```
-# configurações de autenticação
-AUTH_LOGIN_ROUTE=login # rota da página de logon na aplicação
-AUTH_LOGIN_SUCCESS_ROUTE=home # rota de redirecionamento  quando o logon for bem sucedido
-AUTH_USER_MODEL=App\User # modelo do usuário
-AUTH_USER_LOGIN_FIELD=logon # campo referente ao logon do usuário
-
-#configuração de autorização do Secorp
-KEYCLOAK_KEY_FILE=app/credentials/keycloak-jwt-public-key.txt  # JWT Public Key do KeyCloak 
-KEYCLOAK_API_BASE_URL=https://am.tce.mt.gov.br # url base do API Manager
-KEYCLOAK_CLIENT_ID=chave # chave pública da aplicação dentro do REALM
-KEYCLOAK_CLIENT_SECRET=chave # chave secreta do aplicação dentro do REALM
-KEYCLOAK_ENABLED=true/false # habilita ou desabilita a verificação de segurança
-KEYCLOAK_CACHE_ENABLED=true/false # habilita ou desabilita o cache das credenciais de acesso
-KEYCLOAK_CACHE_TIMEOUT=30 # tempo em minutos
+KEYCLOAK_KEY_FILE="app/credentials/keycloak-jwt-public-key.txt" # JWT Public Key do KeyCloak 
+KEYCLOAK_CLIENT_ID=client_id                                    # chave pública da aplicação dentro do REALM
+KEYCLOAK_CLIENT_SECRET=secret                                   # chave secreta do aplicação dentro do REALM
+KEYCLOAK_REDIRECT_URI="${APP_URL}/auth/callback"                # callback da autenticação oauth
+KEYCLOAK_BASE_URL=https://d-iam.tce.mt.gov.br                   # url base do servidor KeyCloak
+KEYCLOAK_REALM=master                                           # realm da aplicação
+KEYCLOAK_ENABLED=true                                           # se FALSE ativa o bypass nas autorizações
+```
+Adicione as configurações do KeyCloak no arquivo `config/services.php`:
+```
+...
+    'keycloak' => [
+        'enabled' => env('KEYCLOAK_ENABLED', false),
+        'key_file' => env('KEYCLOAK_KEY_FILE'),
+        'client_id' => env('KEYCLOAK_CLIENT_ID'),
+        'client_secret' => env('KEYCLOAK_CLIENT_SECRET'),
+        'redirect' => env('KEYCLOAK_REDIRECT_URI'),
+        'base_url' => env('KEYCLOAK_BASE_URL'),
+        'realms' => env('KEYCLOAK_REALM')
+    ],
+...    
 ```
 
 limpe o cache de configurações novamente
@@ -53,9 +56,11 @@ limpe o cache de configurações novamente
 php artisan config:cache
 ```
 
-Edite seu arquivo app/Http/routes.php e utilize o novo controller para lidar com o precesso de autenticação. Exemplo:
+Edite seu arquivo routes/web.php e utilize o novo controller para lidar com o precesso de autenticação. Exemplo:
 ```
-Route::post('/login', '\TCEMT\KeyCloak\Http\Controllers\KeyCloakController@autentica')->name('autentica');
+Route::get('/auth/redirect', [\TCEMT\KeyCloak\Http\Controllers\KeyCloakController::class, 'redirect'])->name('auth.redirect');
+Route::get('/auth/callback', [\TCEMT\KeyCloak\Http\Controllers\KeyCloakController::class, 'callback'])->name('auth.callback');
+Route::get('/auth/logout', [\TCEMT\KeyCloak\Http\Controllers\KeyCloakController::class, 'logout'])->name('auth.logout');
 ```
 
 Execute os comandos abaixo:

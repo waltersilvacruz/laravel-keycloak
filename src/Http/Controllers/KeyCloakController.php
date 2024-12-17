@@ -2,103 +2,68 @@
 
 namespace TCEMT\KeyCloak\Http\Controllers;
 
+use App\Databases\Models\Usuario;
+use App\Http\Controllers\Controller;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Facades\Socialite;
+use Exception;
 
-class KeyCloakController extends Controller
-{
+class KeyCloakController extends Controller {
+
     /**
-     * Handle an authentication attempt.
-     *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function autentica(Request $request)
+    public function redirect(): RedirectResponse
     {
-        $username = $request->input('login');
-        $password = $request->input('senha');
-
-        // Validação dos campos
-        $validator = Validator::make(
-            ['login' => $username, 'senha' => $password],
-            ['login' => 'required', 'senha' => 'required|min:3'],
-            ['required' => ':attribute é obrigatório', 'min' => ':attribute deve ter ao menos :min caracteres']
-        );
-
-        if ($validator->fails()) {
-            return redirect(route(config('keycloak.auth_login_route')))
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        try {
-
-            // Fazer a requisição ao Keycloak
-            $response = Http::asForm()->post(config('keycloak.api_base_url'), [
-                'client_id' => config('keycloak.client_id'),
-                'client_secret' => config('keycloak.client_secret'),
-                'grant_type' => 'password',
-                'username' => $username,
-                'password' => $password,
-                'scope' => 'openid',
-            ]);
-
-            $jwtTokenFile = config('keycloak.key_file');
-            if(!file_exists(storage_path($jwtTokenFile))) {
-                throw new Exception('Arquivo JWT Token não encontrado!');
-            }
-
-            $publicKey = file_get_contents(storage_path($jwtTokenFile));
-
-            if ($response->successful()) {
-                $tokenData = $response->json();
-                // Suponha que $tokenData['access_token'] contém o JWT
-                $token = $tokenData['access_token'];
-
-                $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
-                $permissoes = $decoded->resource_access->webadmin_client;
-                session()->put('permissoes', $permissoes->roles);
-
-                $model = config('keycloak.auth_model');
-                $loginField = config('keycloak.auth_login_field');
-                $usuario = $model::where($loginField, strtoupper($username))->first();
-
-                if (!$usuario) {
-                    $validator->errors()->add('senha', 'Usuário não localizado na base de dados local.');
-                    return redirect(route(config('keycloak.auth_login_route')))->withErrors($validator)->withInput();
-                }
-
-                // Login do usuário no Laravel
-                Auth::login($usuario);
-
-                // Redireciona para o local definido
-                return redirect(route(config('keycloak.auth_login_success_route')));
-            } else {
-                $errorMessage = $response->json('error_description', 'Login ou senha inválidos');
-                $validator->errors()->add('senha', $errorMessage);
-                return redirect(route(config('keycloak.auth_login_route')))->withErrors($validator)->withInput();
-            }
-        } catch (\Exception $e) {
-            $validator->errors()->add('senha', 'Erro durante a autenticação: ' . $e->getMessage());
-            return redirect(route(config('keycloak.auth_login_route')))->withErrors($validator)->withInput();
-        }
+        return Socialite::driver('keycloak')->redirect();
     }
 
     /**
-     * Logout do usuário.
-     *
-     * @return \Illuminate\Http\RedirectResponse
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws Exception
      */
-    public function logout()
+    public function callback(Request $request): RedirectResponse
+    {
+        $userData = Socialite::driver('keycloak')->user();
+        $token = $userData->token;
+        $jwtTokenFile = config('services.keycloak.key_file');
+
+        if(!file_exists(storage_path($jwtTokenFile))) {
+            throw new Exception('Arquivo JWT Token não encontrado!');
+        }
+
+        $usuario = Usuario::query()->where('logon', strtoupper($userData->nickname))->first();
+        if (!$usuario) {
+            $validator = Validator::make([], []);
+            $validator->errors()->add('login', 'Usuário não localizado na base de dados local.');
+            return redirect(route('login'))->withErrors($validator)->withInput();
+        }
+
+        $publicKey = file_get_contents(storage_path($jwtTokenFile));
+        $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
+        $permissoes = $decoded->resource_access?->webadmin_client ?? null;
+        session()->put('permissoes', $permissoes->roles ?? []);
+
+
+        // autenticação do usuário no sistema
+        Auth::login($usuario);
+        return response()->redirectToRoute('dashboard.index');
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    public function logout(): RedirectResponse
     {
         Auth::logout();
-        session()->flush();
-        return redirect(route(config('keycloak.auth_login_route')));
+        Session::flush();
+        return redirect(route('login'));
     }
 }
-
