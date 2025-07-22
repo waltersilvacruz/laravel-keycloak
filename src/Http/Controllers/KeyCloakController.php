@@ -47,10 +47,14 @@ class KeyCloakController extends Controller {
         }
 
         $publicKey = file_get_contents(storage_path($jwtTokenFile));
-        $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
-        $permissoes = $decoded->resource_access?->webadmin_client ?? null;
-        session()->put('permissoes', $permissoes->roles ?? []);
-
+        
+        $loadCredentials = config('services.keycloak.load_credentials');
+        if($loadCredentials) {
+            $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
+            $clientId = config('services.keycloak.client_id');
+            $permissoes = $decoded->resource_access?->$clientId ?? null;
+            session()->put('permissoes', $permissoes->roles ?? []);
+        }
 
         // autenticação do usuário no sistema
         Auth::login($usuario);
