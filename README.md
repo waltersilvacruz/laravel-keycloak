@@ -34,7 +34,8 @@ KEYCLOAK_CLIENT_SECRET=secret                                   # chave secreta 
 KEYCLOAK_REDIRECT_URI="${APP_URL}/auth/callback"                # callback da autenticação oauth
 KEYCLOAK_BASE_URL=https://d-iam.tce.mt.gov.br                   # url base do servidor KeyCloak
 KEYCLOAK_REALM=master                                           # realm da aplicação
-KEYCLOAK_ENABLED=true                                           # se FALSE ativa o bypass nas autorizações
+KEYCLOAK_ENABLED=true/false                                     # se FALSE ativa o bypass nas autorizações
+KEYCLOAK_LOAD_CREDENTIALS=true/false                            # se TRUE ele puxa as credenciais do KeyClock
 ```
 Adicione as configurações do KeyCloak no arquivo `config/services.php`:
 ```
@@ -46,7 +47,8 @@ Adicione as configurações do KeyCloak no arquivo `config/services.php`:
         'client_secret' => env('KEYCLOAK_CLIENT_SECRET'),
         'redirect' => env('KEYCLOAK_REDIRECT_URI'),
         'base_url' => env('KEYCLOAK_BASE_URL'),
-        'realms' => env('KEYCLOAK_REALM')
+        'realms' => env('KEYCLOAK_REALM'),
+        'load_credentials' => env('KEYCLOAK_LOAD_CREDENTIALS', false),
     ],
 ...    
 ```
