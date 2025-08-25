@@ -50,7 +50,7 @@ class KeyCloakServiceProvider extends ServiceProvider {
                 $cssClasses = str_replace('"', "'", $cssClasses);
             }
 
-            $link = route('auth.redirect');
+            $link = env("KEYCLOAK_LOGIN_REDIRECT_URL", route('auth.redirect'));
             return "<a href=\"{$link}\" class=\"{$cssClasses}\">{$label}</a>";
         });
 
@@ -66,7 +66,7 @@ class KeyCloakServiceProvider extends ServiceProvider {
                 $cssClasses = str_replace('"', "'", $cssClasses);
             }
 
-            $appUrl = route('auth.logout');
+            $appUrl = env("KEYCLOAK_LOGOUT_URL", route('auth.logout'));
             $link = \Laravel\Socialite\Facades\Socialite::driver('keycloak')->getLogoutUrl($appUrl, env('KEYCLOAK_CLIENT_ID'));
             return "<a href=\"{$link}\" class=\"{$cssClasses}\">{$label}</a>";
         });
