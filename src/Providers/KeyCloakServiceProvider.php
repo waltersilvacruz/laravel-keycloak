@@ -66,9 +66,7 @@ class KeyCloakServiceProvider extends ServiceProvider {
                 $cssClasses = str_replace('"', "'", $cssClasses);
             }
 
-            $appUrl = env("KEYCLOAK_LOGOUT_URL", route('auth.logout'));
-            $idTokenHint = session()->get('keycloak_auth_id_token');
-            $link = \Laravel\Socialite\Facades\Socialite::driver('keycloak')->getLogoutUrl($appUrl, env('KEYCLOAK_CLIENT_ID'), $idTokenHint);
+            $link = route('auth.logout-redirect');
             return "<a href=\"{$link}\" class=\"{$cssClasses}\">{$label}</a>";
         });
     }

@@ -49,7 +49,7 @@ class KeyCloakController extends Controller {
         }
 
         $publicKey = file_get_contents(storage_path($jwtTokenFile));
-        
+
         $loadCredentials = config('services.keycloak.load_credentials');
         if($loadCredentials) {
             $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
@@ -65,6 +65,19 @@ class KeyCloakController extends Controller {
         // autenticação do usuário no sistema
         Auth::login($usuario);
         return response()->redirectToRoute('dashboard.index');
+    }
+
+    /**
+     * @return RedirectResponse
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function logoutRedirect(): RedirectResponse
+    {
+        $appUrl = env("KEYCLOAK_LOGOUT_URL", route('auth.logout'));
+        $idTokenHint = session()->get('keycloak_auth_id_token');
+        $link = \Laravel\Socialite\Facades\Socialite::driver('keycloak')->getLogoutUrl($appUrl, env('KEYCLOAK_CLIENT_ID'), $idTokenHint);
+        return response()->redirectTo($link);
     }
 
     /**
