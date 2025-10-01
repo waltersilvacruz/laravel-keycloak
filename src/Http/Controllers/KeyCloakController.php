@@ -33,6 +33,8 @@ class KeyCloakController extends Controller {
     {
         $userData = Socialite::driver('keycloak')->user();
         $token = $userData->token;
+        $idToken = $userData->accessTokenResponseBody['id_token'];
+        $refreshToken = $userData->refreshToken;
         $jwtTokenFile = config('services.keycloak.key_file');
 
         if(!file_exists(storage_path($jwtTokenFile))) {
@@ -55,6 +57,10 @@ class KeyCloakController extends Controller {
             $permissoes = $decoded->resource_access?->$clientId ?? null;
             session()->put('permissoes', $permissoes->roles ?? []);
         }
+
+        session()->put('keycloak_auth_token', $token);
+        session()->put('keycloak_auth_id_token', $idToken);
+        session()->put('keycloak_auth_refresh_token', $refreshToken);
 
         // autenticação do usuário no sistema
         Auth::login($usuario);
