@@ -5,5 +5,6 @@ use TCEMT\KeyCloak\Http\Controllers\KeyCloakController;
 Route::group(['middleware' => ['web']], function () {
     Route::get('/auth/redirect', [KeyCloakController::class, 'redirect'])->name('auth.redirect');
     Route::get('/auth/callback', [KeyCloakController::class, 'callback'])->name('auth.callback');
+    Route::get('/auth/logout-redirect', [KeyCloakController::class, 'logoutRedirect'])->name('auth.logout-redirect');
     Route::get('/auth/logout', [KeyCloakController::class, 'logout'])->name('auth.logout');
 });
