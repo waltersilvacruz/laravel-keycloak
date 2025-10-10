@@ -52,6 +52,7 @@ class KeyCloakController extends Controller {
 
         $loadCredentials = config('services.keycloak.load_credentials');
         if($loadCredentials) {
+            JWT::$leeway = config('services.keycloak.jwt_leeway', 0);
             $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
             $clientId = config('services.keycloak.client_id');
             $permissoes = $decoded->resource_access?->$clientId ?? null;

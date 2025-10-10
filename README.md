@@ -36,6 +36,7 @@ KEYCLOAK_BASE_URL=https://d-iam.tce.mt.gov.br                   # url base do se
 KEYCLOAK_REALM=master                                           # realm da aplicação
 KEYCLOAK_ENABLED=true/false                                     # se FALSE ativa o bypass nas autorizações
 KEYCLOAK_LOAD_CREDENTIALS=true/false                            # se TRUE ele puxa as credenciais do KeyClock
+KEYCLOAK_JWT_LEEWAY=0                                           # tempo de tolerância em segundos para expiração do token JWT    
 ```
 Adicione as configurações do KeyCloak no arquivo `config/services.php`:
 ```
@@ -49,6 +50,7 @@ Adicione as configurações do KeyCloak no arquivo `config/services.php`:
         'base_url' => env('KEYCLOAK_BASE_URL'),
         'realms' => env('KEYCLOAK_REALM'),
         'load_credentials' => env('KEYCLOAK_LOAD_CREDENTIALS', false),
+        'jwt_leeway' => env('KEYCLOAK_JWT_LEEWAY', 0),
     ],
 ...    
 ```
