@@ -50,7 +50,7 @@ class KeyCloakServiceProvider extends ServiceProvider {
                 $cssClasses = str_replace('"', "'", $cssClasses);
             }
 
-            $link = env("KEYCLOAK_LOGIN_REDIRECT_URL", route('auth.redirect'));
+            $link = route('auth.redirect');
             return "<a href=\"{$link}\" class=\"{$cssClasses}\">{$label}</a>";
         });
 
