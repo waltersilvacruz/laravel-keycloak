@@ -75,9 +75,9 @@ class KeyCloakController extends Controller {
      */
     public function logoutRedirect(): RedirectResponse
     {
-        $appUrl = env("KEYCLOAK_LOGOUT_URL", route('auth.logout'));
+        $appUrl = route('auth.logout');
         $idTokenHint = session()->get('keycloak_auth_id_token');
-        $link = \Laravel\Socialite\Facades\Socialite::driver('keycloak')->getLogoutUrl($appUrl, env('KEYCLOAK_CLIENT_ID'), $idTokenHint);
+        $link = \Laravel\Socialite\Facades\Socialite::driver('keycloak')->getLogoutUrl($appUrl, config("services.keycloak.client_id"), $idTokenHint);
         return response()->redirectTo($link);
     }
 
