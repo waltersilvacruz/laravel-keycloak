@@ -50,7 +50,7 @@ Adicione as configurações do KeyCloak no arquivo `config/services.php`:
         'client_secret' => env('KEYCLOAK_CLIENT_SECRET'),
         'redirect' => env('KEYCLOAK_REDIRECT_URI'),
         'base_url' => env('KEYCLOAK_BASE_URL'),
-        'realm' => env('KEYCLOAK_REALM'),
+        'realms' => env('KEYCLOAK_REALM'),
         'enabled' => env('KEYCLOAK_ENABLED'),
         'load_credentials' => env('KEYCLOAK_LOAD_CREDENTIALS', false),
         'jwt_leeway' => env('KEYCLOAK_JWT_LEEWAY', 0),
