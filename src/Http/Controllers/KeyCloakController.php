@@ -65,7 +65,7 @@ class KeyCloakController extends Controller {
 
         // autenticação do usuário no sistema
         Auth::login($usuario);
-        return response()->redirectToRoute('dashboard.index');
+        return response()->redirectToRoute(config('services.keycloak.login_redirect_route'));
     }
 
     /**
