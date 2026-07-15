@@ -31,14 +31,15 @@ Edite o arquivo .env e adicione a configuração básicas para o componente de s
 KEYCLOAK_KEY_FILE="app/credentials/keycloak-jwt-public-key.txt" # JWT Public Key do KeyCloak 
 KEYCLOAK_CLIENT_ID=client_id                                    # chave pública da aplicação dentro do REALM
 KEYCLOAK_CLIENT_SECRET=secret                                   # chave secreta do aplicação dentro do REALM
-KEYCLOAK_REDIRECT_URI="${APP_URL}/auth/callback"                # callback da autenticação oauth
-KEYCLOAK_BASE_URL=https://d-iam.tce.mt.gov.br                   # url base do servidor KeyCloak
+KEYCLOAK_REDIRECT_URI="${APP_URL}/auth/callback"                # callback da autenticação oauth (não modifique este valor)
+KEYCLOAK_LOGIN_REDIRECT_ROUTE="dashboard.index"                 # rota para redirecionar o usuário após o login no KeyCloak
+KEYCLOAK_BASE_URL=https://your-keycloak-url.com                 # url base do servidor KeyCloak
 KEYCLOAK_REALM=master                                           # realm da aplicação
 KEYCLOAK_ENABLED=true/false                                     # se FALSE ativa o bypass nas autorizações
 KEYCLOAK_CACHE_TIMEOUT=30                                       # tempo de timeout em segundos para as requisições HTTP
 KEYCLOAK_ENABLED=true/false                                     # se TRUE ativa o KeyCloak na aplicação
 KEYCLOAK_LOAD_CREDENTIALS=true/false                            # se TRUE ele puxa as credenciais do KeyClock
-KEYCLOAK_JWT_LEEWAY=0                                           # tempo de tolerância em segundos para expiração do token JWT    
+KEYCLOAK_JWT_LEEWAY=0                                           # tempo de tolerância em segundos para expiração do token JWT
 ```
 Adicione as configurações do KeyCloak no arquivo `config/services.php`:
 ```
@@ -49,6 +50,7 @@ Adicione as configurações do KeyCloak no arquivo `config/services.php`:
         'client_id' => env('KEYCLOAK_CLIENT_ID'),
         'client_secret' => env('KEYCLOAK_CLIENT_SECRET'),
         'redirect' => env('KEYCLOAK_REDIRECT_URI'),
+        'login_redirect_route' => env('KEYCLOAK_LOGIN_REDIRECT_ROUTE', 'dashboard.index'),
         'base_url' => env('KEYCLOAK_BASE_URL'),
         'realms' => env('KEYCLOAK_REALM'),
         'enabled' => env('KEYCLOAK_ENABLED'),
